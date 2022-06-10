@@ -1,5 +1,6 @@
 package com.microservices.cambioservice.controller;
 
+import com.microservices.cambioservice.CambioRepository;
 import com.microservices.cambioservice.model.Cambio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @RestController
 @RequestMapping("cambio-service")
@@ -17,12 +19,26 @@ public class CambioController {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private CambioRepository repository;
+
     @GetMapping(value = "/{amount}/{from}/{to}")
     public Cambio getCambio(@PathVariable BigDecimal amount,
                             @PathVariable String from,
                             @PathVariable String to) {
-        var port = environment.getProperty("local.server.port");
+        var cambio = repository.findByFromAndTo(from, to);
 
-        return new Cambio(1L, from, to, BigDecimal.ONE, BigDecimal.ONE, port);
+        if (cambio == null) {
+            throw new RuntimeException("Currency Unsupported");
+        }
+
+        var port = environment.getProperty("local.server.port");
+        BigDecimal conversionFactor = cambio.getConversionFactor();
+        BigDecimal convertedValue = conversionFactor.multiply(amount);
+
+        cambio.setEnvironment(port);
+        cambio.setConvertedValue(convertedValue.setScale(2, RoundingMode.CEILING));
+
+        return cambio;
     }
 }
