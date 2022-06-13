@@ -1,4 +1,4 @@
-package com.microservices.cambioservice;
+package com.microservices.cambioservice.repository;
 
 import com.microservices.cambioservice.model.Cambio;
 import org.springframework.data.jpa.repository.JpaRepository;

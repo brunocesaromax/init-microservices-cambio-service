@@ -1,6 +1,6 @@
 package com.microservices.cambioservice.controller;
 
-import com.microservices.cambioservice.CambioRepository;
+import com.microservices.cambioservice.repository.CambioRepository;
 import com.microservices.cambioservice.model.Cambio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
