@@ -19,6 +19,13 @@ spring:
     url: jdbc:postgresql://localhost:54320/cambio_service
     user: root
     password: admin123
+springdoc:
+  api-docs:
+    path: cambio-service/v3/api-docs
+  show-actuator: true
+  swagger-ui:
+    config-url: /cambio-service/v3/api-docs/swagger-config
+    url: /cambio-service/v3/api-docs
 eureka:
   client:
     service-url:
