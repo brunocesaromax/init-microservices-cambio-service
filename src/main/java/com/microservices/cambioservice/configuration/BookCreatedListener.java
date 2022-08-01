@@ -10,6 +10,10 @@ public class BookCreatedListener {
     @RabbitListener(queues = "book-service.v1.create-book.cambio-service")
     public void onBookCreated(BookRetrieve bookRetrieve) {
         System.out.println(bookRetrieve.toString());
+
+        if (bookRetrieve.getTitle().length() > 35) {
+            throw new RuntimeException("Falha no processamento da criação do livro de id: " + bookRetrieve.getId());
+        }
     }
 
 }
