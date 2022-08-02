@@ -13,18 +13,39 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfig {
 
     @Bean
     public Queue createBookQueue() {
-        return new Queue("book-service.v1.create-book.cambio-service");
+        Map<String, Object> args = new HashMap<>();
+
+        //Se quiser enviar direto para a fila em da exchange
+        //args.put("x-dead-letter-routing-key", "book-service.v1.create-book.dlx.cambio-service.dlq");
+        args.put("x-dead-letter-exchange", "book-service.v1.create-book.dlx");
+
+        return new Queue("book-service.v1.create-book.cambio-service", true, false, false, args);
     }
 
     @Bean
     public Binding binding() {
-        Queue queue = new Queue("book-service.v1.create-book.cambio-service");
+        Queue queue = createBookQueue();
         FanoutExchange exchange = new FanoutExchange("book-service.v1.create-book");
+        return BindingBuilder.bind(queue).to(exchange);
+    }
+
+    @Bean
+    public Queue createBookQueueDLQ() {
+        return new Queue("book-service.v1.create-book.dlx.cambio-service.dlq");
+    }
+
+    @Bean
+    public Binding bindingDLQ() {
+        Queue queue = createBookQueueDLQ();
+        FanoutExchange exchange = new FanoutExchange("book-service.v1.create-book.dlx");
         return BindingBuilder.bind(queue).to(exchange);
     }
 
