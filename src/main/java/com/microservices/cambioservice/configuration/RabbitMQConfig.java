@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+//Referência: https://www.youtube.com/watch?v=GgIJWxk_-jM&list=PLZTjHbp2Y7809w3PLM0UE_LgQq6vk49q0&index=9
 @Configuration
 public class RabbitMQConfig {
 
@@ -47,6 +48,11 @@ public class RabbitMQConfig {
         Queue queue = createBookQueueDLQ();
         FanoutExchange exchange = new FanoutExchange("book-service.v1.create-book.dlx");
         return BindingBuilder.bind(queue).to(exchange);
+    }
+
+    @Bean
+    public Queue createBookQueueDLQParkingLot() {
+        return new Queue("book-service.v1.create-book.dlx.cambio-service.dlq.parking-lot");
     }
 
     @Bean
